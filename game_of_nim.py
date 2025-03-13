@@ -16,7 +16,7 @@ class GameOfNim(Game):
         actions = []
         for row_idx, count in enumerate(board):
             for num in range(1, count + 1):
-                actions.append((row_idx, num))  # (row index, number to remove)
+                actions.append((row_idx, num))
         return actions
 
     def actions(self, state):
@@ -26,10 +26,10 @@ class GameOfNim(Game):
     def result(self, state, move):
         """Return the resulting state after applying a move."""
         row, num = move
-        new_board = list(state.board)  # Copy board
-        new_board[row] -= num  # Apply move
+        new_board = list(state.board) 
+        new_board[row] -= num  
         next_player = 'MIN' if state.to_move == 'MAX' else 'MAX'
-        moves = self.actions_from_board(new_board)  # Generate moves for new state
+        moves = self.actions_from_board(new_board)
         utility = self.compute_utility(new_board, state.to_move) if self.terminal_test(GameState(next_player, 0, new_board, moves)) else 0
         return GameState(to_move=next_player, utility=utility, board=new_board, moves=moves)
 
