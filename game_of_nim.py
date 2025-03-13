@@ -1,33 +1,53 @@
 from games import *
+# from games import Game, GameState, query_player, alpha_beta_player
 
 class GameOfNim(Game):
-    """Play Game of Nim with first player 'MAX'.
-    A state has the player to move, a cached utility, a list of moves in
-    the form of a list of (x, y) positions, and a board, in the form of
-    a list with number of objects in each row."""
+    def __init__(self, board):
+        """Initialize the Game of Nim with the given board."""
+        self.initial = GameState(
+            to_move='MAX',
+            utility=0,
+            board=board,
+            moves=self.actions_from_board(board)
+        )
 
-    def __init__(self, board=[3,1]):
-        raise NotImplementedError
+    def actions_from_board(self, board):
+        """Generate all possible actions from the current board."""
+        actions = []
+        for row_idx, count in enumerate(board):
+            for num in range(1, count + 1):
+                actions.append((row_idx, num))  # (row index, number to remove)
+        return actions
 
     def actions(self, state):
-        """Legal moves are at least one object, all from the same row."""
+        """Return a list of valid actions in the given state."""
         return state.moves
 
     def result(self, state, move):
-        raise NotImplementedError
-
-    def utility(self, state, player):
-        """Return the value to player; 1 for win, -1 for loss, 0 otherwise."""
-        raise NotImplementedError
+        """Return the resulting state after applying a move."""
+        row, num = move
+        new_board = list(state.board)  # Copy board
+        new_board[row] -= num  # Apply move
+        next_player = 'MIN' if state.to_move == 'MAX' else 'MAX'
+        moves = self.actions_from_board(new_board)  # Generate moves for new state
+        utility = self.compute_utility(new_board, state.to_move) if self.terminal_test(GameState(next_player, 0, new_board, moves)) else 0
+        return GameState(to_move=next_player, utility=utility, board=new_board, moves=moves)
 
     def terminal_test(self, state):
-        """A state is terminal if there are no objects left"""
-        raise NotImplementedError
+        """Return True if the game is over (all piles are empty)."""
+        return all(pile == 0 for pile in state.board)
+
+    def utility(self, state, player):
+        """Return the utility of the state from the perspective of player."""
+        return state.utility if player == 'MAX' else -state.utility
+
+    def compute_utility(self, board, player):
+        """Compute utility for terminal state. The player who makes the last move loses."""
+        return -1 if player == 'MAX' else +1
 
     def display(self, state):
-        board = state.board
-        print("board: ", board)
-
+        """Display the current board."""
+        print("board: ", state.board)
 
 if __name__ == "__main__":
     nim = GameOfNim(board=[0, 5, 3, 1]) # Creating the game instance
