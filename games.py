@@ -157,7 +157,6 @@ def alpha_beta_cutoff_search(state, game, d=4, cutoff_test=None, eval_fn=None):
         return v
 
     # Body of alpha_beta_cutoff_search starts here:
-    # The default test cuts off at depth d or at a terminal state
     cutoff_test = (cutoff_test or (lambda state, depth: depth > d or game.terminal_test(state)))
     eval_fn = eval_fn or (lambda state: game.utility(state, player))
     best_score = -np.inf

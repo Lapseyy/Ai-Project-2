@@ -1,5 +1,4 @@
 from games import *
-# from games import Game, GameState, query_player, alpha_beta_player
 
 class GameOfNim(Game):
     def __init__(self, board):
@@ -50,13 +49,30 @@ class GameOfNim(Game):
         print("board: ", state.board)
 
 if __name__ == "__main__":
-    nim = GameOfNim(board=[0, 5, 3, 1]) # Creating the game instance
-    #nim = GameOfNim(board=[7, 5, 3, 1]) # a much larger tree to search
-    print(nim.initial.board) # must be [0, 5, 3, 1]
-    print(nim.initial.moves) # must be [(1, 1), (1, 2), (1, 3), (1, 4), (1, 5), (2, 1), (2, 2), (2, 3), (3, 1)]
+    nim = GameOfNim(board=[0, 5, 3, 1]) 
+    print(nim.initial.board) 
+    print(nim.initial.moves) 
     print(nim.result(nim.initial, (1,3) ))
-    utility = nim.play_game(alpha_beta_player, query_player) # computer moves first 
+    utility = nim.play_game(alpha_beta_player, query_player)  
     if (utility < 0):
         print("MIN won the game")
     else:
         print("MAX won the game")
+
+    # Test Cases
+    assert nim.initial.board == [0, 5, 3, 1], "Initialization failed"
+    assert nim.initial.moves == [(1, 1), (1, 2), (1, 3), (1, 4), (1, 5), (2, 1), (2, 2), (2, 3), (3, 1)], "Actions failed"
+
+    new_state = nim.result(nim.initial, (1, 3))
+    assert new_state.board == [0, 2, 3, 1], "Result function failed"
+    assert new_state.to_move == 'MIN', "Turn change failed"
+
+    empty_state = GameState(to_move='MAX', utility=0, board=[0, 0, 0], moves=[])
+    assert nim.terminal_test(empty_state) == True, "Terminal test failed"
+
+    assert nim.utility(empty_state, 'MAX') == -1, "Utility calculation failed"
+    assert nim.utility(empty_state, 'MIN') == 1, "Utility calculation failed"
+
+    print("All test cases passed")
+
+  
